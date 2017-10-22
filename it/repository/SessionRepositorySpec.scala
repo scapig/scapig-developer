@@ -2,7 +2,7 @@ package repository
 
 import javax.inject.Singleton
 
-import models.{Session, User}
+import models.{HasSucceeded, Session, User}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import play.api.Application
@@ -55,4 +55,19 @@ class SessionRepositorySpec extends UnitSpec with BeforeAndAfterEach {
     }
   }
 
+  "delete" should {
+    "delete a session" in {
+      await(underTest.save(session))
+
+      val result = await(underTest.delete(session.sessionId))
+
+      result shouldBe HasSucceeded
+      await(underTest.fetch(session.sessionId)) shouldBe None
+    }
+
+    "not fail when the session does not exist" in {
+      await(underTest.delete(session.sessionId)) shouldBe HasSucceeded
+    }
+
+  }
 }

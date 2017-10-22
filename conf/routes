@@ -1,2 +1,9 @@
 
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+POST          /developer                                 @controllers.DeveloperController.register
+GET           /developer                                 @controllers.DeveloperController.fetchByEmail(email: String)
+
+POST          /session                                   @controllers.SessionController.create
+GET           /session/:id                               @controllers.SessionController.fetch(id: String)
+DELETE        /session/:id                               @controllers.SessionController.delete(id: String)

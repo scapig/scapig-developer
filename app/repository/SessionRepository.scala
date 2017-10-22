@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import config.AppConfig
 import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoApi
-import models.Session
+import models.{HasSucceeded, Session}
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONDocument
@@ -35,6 +35,15 @@ class SessionRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi, val ap
   def fetch(sessionId: String): Future[Option[Session]] = {
     repository.flatMap(collection =>
       collection.find(Json.obj("sessionId"-> sessionId)).one[Session]
+    )
+  }
+
+  def delete(sessionId: String): Future[HasSucceeded] = {
+    repository.flatMap(collection =>
+      collection.remove(Json.obj("sessionId"-> sessionId)) map {
+        case result if result.ok => HasSucceeded
+        case error => throw new RuntimeException(s"Failed to delete session ${error.writeErrors}")
+      }
     )
   }
 
