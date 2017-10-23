@@ -1,16 +1,15 @@
 package controllers
 
+import models.JsonFormatters._
 import models._
-import org.mockito.BDDMockito
 import org.mockito.BDDMockito.given
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.{FakeRequest, Helpers}
-import services.{DeveloperService, SessionService}
+import services.SessionService
 import utils.UnitSpec
 
-import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 
 class SessionControllerSpec extends UnitSpec with MockitoSugar {
@@ -62,7 +61,7 @@ class SessionControllerSpec extends UnitSpec with MockitoSugar {
       val result = await(underTest.fetch(userSession.session.sessionId)(request))
 
       status(result) shouldBe Status.NOT_FOUND
-      jsonBodyOf(result) shouldBe Json.parse("""{"code":"SESSION_NOT_FOUND","message":""The session is invalid or expired."}""")
+      jsonBodyOf(result) shouldBe Json.parse("""{"code":"SESSION_NOT_FOUND","message":"The session is invalid or expired."}""")
     }
 
   }

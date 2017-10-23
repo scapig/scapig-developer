@@ -19,6 +19,7 @@ case class ErrorNotFound() extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The re
 case class ErrorUserAlreadyRegistered() extends ErrorResponse(CONFLICT, "EMAIL_ALREADY_REGISTERED", "The email is already registered")
 case class ErrorUserNotFound() extends ErrorResponse(NOT_FOUND, "USER_NOT_FOUND", "The user could not be found.")
 case class ErrorSessionNotFound() extends ErrorResponse(NOT_FOUND, "SESSION_NOT_FOUND", "The session is invalid or expired.")
+case class ErrorInvalidCredentials() extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", "Invalid unsername or password")
 
 class ValidationException(message: String) extends RuntimeException(message)
 

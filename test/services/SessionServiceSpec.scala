@@ -1,6 +1,7 @@
 package services
 
 import models._
+import org.joda.time.{DateTime, DateTimeUtils}
 import org.mockito.{BDDMockito, Matchers, Mockito}
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.any
@@ -29,13 +30,21 @@ class SessionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterE
     when(sessionRepository.save(any())).thenAnswer(returnSame)
   }
 
+  override def beforeEach(): Unit = {
+    DateTimeUtils.setCurrentMillisFixed(2000)
+  }
+
+  override def afterEach(): Unit = {
+    DateTimeUtils.setCurrentMillisSystem()
+  }
+
   "createForUser" should {
     "create a session when authentication succeeds" in new Setup {
       given(authenticationService.authenticate(user.email, password)).willReturn(successful(user))
 
-      val userSession = await(underTest.createForUser("email", "password"))
+      val userSession = await(underTest.createForUser(user.email, password))
 
-      userSession.user shouldBe user
+      userSession.user shouldBe UserResponse(user.email, user.firstName, user.lastName, user.registrationTime)
       verify(sessionRepository).save(userSession.session)
     }
 
@@ -43,7 +52,7 @@ class SessionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterE
       given(authenticationService.authenticate(user.email, password)).willReturn(failed(InvalidCredentials()))
 
       intercept[InvalidCredentials] {
-        await(underTest.createForUser("email", "password"))
+        await(underTest.createForUser(user.email, password))
       }
     }
   }

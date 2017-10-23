@@ -12,7 +12,7 @@ class BCyptGeneratorSpec extends UnitSpec with MockitoSugar {
     "generate a BCrypt from a password - generating a salt + including it in the payload" in {
       val hashedPassword = underTest.fromPassword(rawPassword)
 
-      underTest.authenticate(rawPassword, hashedPassword) shouldBe HasSucceeded
+      await(underTest.authenticate(rawPassword, hashedPassword)) shouldBe HasSucceeded
     }
 
     "generate a BCrypt with unique salt" in {
@@ -24,13 +24,13 @@ class BCyptGeneratorSpec extends UnitSpec with MockitoSugar {
     "return HasSucceeded when the credentials are valid" in {
       val hashedPassword = underTest.fromPassword(rawPassword)
 
-      underTest.authenticate(rawPassword, hashedPassword) shouldBe HasSucceeded
+      await(underTest.authenticate(rawPassword, hashedPassword)) shouldBe HasSucceeded
     }
 
     "fail with InvalidCredentials when the credentials are invalid" in {
       val hashedPassword = underTest.fromPassword(rawPassword)
 
-      intercept[InvalidCredentials]{underTest.authenticate("otherpassword", hashedPassword)}
+      intercept[InvalidCredentials]{await(underTest.authenticate("otherpassword", hashedPassword))}
     }
   }
 }

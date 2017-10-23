@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.{ErrorSessionNotFound, SessionCreateRequest, SessionNotFound, UserCreateRequest}
+import models._
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.SessionService
@@ -17,6 +17,8 @@ class SessionController  @Inject()(cc: ControllerComponents, sessionService: Ses
   def create() = Action.async(parse.json) { implicit request =>
     withJsonBody[SessionCreateRequest] { sessionCreateRequest: SessionCreateRequest =>
     sessionService.createForUser(sessionCreateRequest.email, sessionCreateRequest.password) map { userSession => Created(Json.toJson(userSession))}
+    } recover {
+      case _: InvalidCredentials => ErrorInvalidCredentials().toHttpResponse
     }
   }
 

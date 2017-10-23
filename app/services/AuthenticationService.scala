@@ -15,7 +15,7 @@ class AuthenticationService @Inject()(userRepository: UserRepository, bCryptGene
     for {
       maybeUser <- userRepository.fetchByEmail(email)
       user = maybeUser.getOrElse(throw InvalidCredentials())
-      _ = bCryptGenerator.authenticate(user.credentials, password)
+      _ <- bCryptGenerator.authenticate(password, user.credentials)
     } yield user
   }
 }

@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class SessionRepositorySpec extends UnitSpec with BeforeAndAfterEach {
 
-  val session = Session("sessionId", DateTime.now(), DateTime.now(), "user@test.com")
+  val session = Session("user@test.com", "sessionId", DateTime.now(), DateTime.now())
 
   lazy val fakeApplication: Application = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> "mongodb://localhost:27017/tapi-developer-test")
