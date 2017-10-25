@@ -1,6 +1,6 @@
 package controllers
 
-import models.{User, UserAlreadyRegistered, UserCreateRequest}
+import models.{User, UserAlreadyRegistered, UserCreateRequest, UserResponse}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyZeroInteractions
 import org.scalatest.mockito.MockitoSugar
@@ -34,7 +34,7 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
       val result = await(underTest.register()(request.withBody(toJson(userCreateRequest))))
 
       status(result) shouldBe Status.OK
-      jsonBodyOf(result) shouldBe Json.toJson(user)
+      jsonBodyOf(result) shouldBe Json.toJson(UserResponse(user))
     }
 
     "fail with a 400 (Bad Request) when the json payload is invalid for the request" in new Setup {

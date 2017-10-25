@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.{ErrorUserAlreadyRegistered, ErrorUserNotFound, UserAlreadyRegistered, UserCreateRequest}
+import models._
 import play.api.mvc.{AbstractController, ControllerComponents}
 import models.JsonFormatters._
 import play.api.libs.json.Json
@@ -23,7 +23,7 @@ class DeveloperController  @Inject()(cc: ControllerComponents, developerService:
 
   def register() =  Action.async(parse.json) { implicit request =>
     withJsonBody[UserCreateRequest] { userCreateRequest: UserCreateRequest =>
-      developerService.createUser(userCreateRequest) map (user => Ok(Json.toJson(user)))
+      developerService.createUser(userCreateRequest) map (user => Ok(Json.toJson(UserResponse(user))))
     } recover {
       case _: UserAlreadyRegistered   => ErrorUserAlreadyRegistered().toHttpResponse
     }
