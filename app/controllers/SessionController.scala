@@ -30,7 +30,7 @@ class SessionController  @Inject()(cc: ControllerComponents, sessionService: Ses
   }
 
   def delete(sessionId: String) = Action.async { implicit request =>
-    Future.successful(Ok(""))
+    sessionService.delete(sessionId) map {_ => NoContent}
   }
 
 }

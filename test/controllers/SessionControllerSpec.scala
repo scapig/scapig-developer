@@ -65,4 +65,14 @@ class SessionControllerSpec extends UnitSpec with MockitoSugar {
     }
 
   }
+
+  "delete" should {
+    "return 204 (NoContent) and delete the session" in new Setup {
+      given(sessionService.delete(userSession.session.sessionId)).willReturn(successful(HasSucceeded))
+
+      val result = await(underTest.delete(userSession.session.sessionId)(request))
+
+      status(result) shouldBe Status.NO_CONTENT
+    }
+  }
 }

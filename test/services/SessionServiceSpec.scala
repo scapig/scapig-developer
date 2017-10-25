@@ -83,4 +83,16 @@ class SessionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterE
     }
 
   }
+
+  "delete" should {
+    val session = Session(user.email)
+
+    "delete the session from the repository" in new Setup {
+      given(sessionRepository.delete(session.sessionId)).willReturn(successful(HasSucceeded))
+
+      val result = await(underTest.delete(session.sessionId))
+
+      result shouldBe HasSucceeded
+    }
+  }
 }

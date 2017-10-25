@@ -27,4 +27,8 @@ class SessionService @Inject()(sessionRepository: SessionRepository, authenticat
       user = maybeUser.getOrElse(throw SessionNotFound(sessionId))
     } yield UserSession(session, UserResponse(user))
   }
+
+  def delete(sessionId: String): Future[HasSucceeded] = {
+    sessionRepository.delete(sessionId)
+  }
 }
