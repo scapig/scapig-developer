@@ -28,4 +28,11 @@ class DeveloperController  @Inject()(cc: ControllerComponents, developerService:
       case _: UserAlreadyRegistered   => ErrorUserAlreadyRegistered().toHttpResponse
     }
   }
+
+  def updateProfile(email: String) =  Action.async(parse.json) { implicit request =>
+    withJsonBody[UserEditRequest] { userEditRequest: UserEditRequest =>
+      developerService.updateUser(email, userEditRequest) map (user => Ok(Json.toJson(UserResponse(user))))
+    }
+  }
+
 }

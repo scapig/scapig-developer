@@ -2,7 +2,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
-import models.{User, UserAlreadyRegistered, UserCreateRequest}
+import models._
 import repository.UserRepository
 import utils.BCryptGenerator
 
@@ -18,6 +18,13 @@ class DeveloperService @Inject()(userRepository: UserRepository, bCryptGenerator
       _ = if (developer.isDefined) throw UserAlreadyRegistered(userCreateRequest.email)
       user <- userRepository.save(User(userCreateRequest, bCryptGenerator.fromPassword(userCreateRequest.password)))
     } yield user
+  }
+
+  def updateUser(email: String, userEditRequest: UserEditRequest): Future[User] = {
+    for {
+      user <- userRepository.fetchByEmail(email).map(_.getOrElse(throw UserNotFound(email)))
+      updated <- userRepository.save(user.copy(firstName = userEditRequest.firstName, lastName = userEditRequest.lastName))
+    } yield updated
   }
 
   def fetchByEmail(email: String): Future[Option[User]] = {

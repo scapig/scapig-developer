@@ -1,8 +1,8 @@
 package controllers
 
-import models.{User, UserAlreadyRegistered, UserCreateRequest, UserResponse}
+import models.{UserEditRequest, _}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyZeroInteractions
+import org.mockito.Mockito.{verifyZeroInteractions, verify}
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -78,5 +78,20 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
       jsonBodyOf(result) shouldBe Json.parse("""{"code":"USER_NOT_FOUND","message":"The user could not be found."}""")
     }
 
+  }
+
+  "updateProfile" should {
+    val userEditRequest = UserEditRequest("updatedFirstName", "updatedLastName")
+    val updatedUser = user.copy(firstName = "updatedFirstName", lastName = "updatedLastName")
+
+    "save the update user and return 200 (Ok) with the update user" in new Setup {
+      given(developerService.updateUser(user.email, userEditRequest)).willReturn(successful(updatedUser))
+
+      val result = await(underTest.updateProfile(user.email)(request.withBody(toJson(userEditRequest))))
+
+      verify(developerService).updateUser(user.email, userEditRequest)
+      status(result) shouldBe Status.OK
+      jsonBodyOf(result) shouldBe Json.toJson(UserResponse(updatedUser))
+    }
   }
 }

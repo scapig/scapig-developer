@@ -1,6 +1,6 @@
 package services
 
-import models.{User, UserAlreadyRegistered, UserCreateRequest}
+import models._
 import org.joda.time.DateTimeUtils
 import org.mockito.BDDMockito.given
 import org.mockito.Matchers.any
@@ -79,5 +79,27 @@ class DeveloperServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
       result shouldBe None
     }
 
+  }
+
+  "updateUser" should {
+    val updateRequest = UserEditRequest("updatedFirstName", "updatedLastName")
+
+    "fail with UserNotFound error when the user does not exist" in new Setup {
+      given(userRepository.fetchByEmail(user.email)).willReturn(successful(None))
+
+      intercept[UserNotFound]{await(underTest.updateUser(user.email, updateRequest))}
+    }
+
+    "update the user first name and last name" in new Setup {
+      val expectedUser = user.copy(firstName = "updatedFirstName", lastName = "updatedLastName")
+
+      given(userRepository.fetchByEmail(user.email)).willReturn(successful(Some(user)))
+      given(userRepository.save(any())).willAnswer(returnSame)
+
+      val result = await(underTest.updateUser(user.email, updateRequest))
+
+      result shouldBe expectedUser
+      verify(userRepository).save(expectedUser)
+    }
   }
 }

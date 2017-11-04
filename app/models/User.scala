@@ -29,3 +29,6 @@ case class UserResponse(email: String,
 object UserResponse {
   def apply(user: User): UserResponse = UserResponse(user.email, user.firstName, user.lastName, user.registrationTime)
 }
+
+case class UserEditRequest(firstName: String,
+                           lastName: String)
