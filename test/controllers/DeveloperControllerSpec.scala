@@ -28,12 +28,12 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
   }
 
   "register" should {
-    "succeed with a 200 (Ok) and the user" in new Setup {
+    "succeed with a 201 (Created) and the user" in new Setup {
       given(developerService.createUser(userCreateRequest)).willReturn(successful(user))
 
       val result = await(underTest.register()(request.withBody(toJson(userCreateRequest))))
 
-      status(result) shouldBe Status.OK
+      status(result) shouldBe Status.CREATED
       jsonBodyOf(result) shouldBe Json.toJson(UserResponse(user))
     }
 

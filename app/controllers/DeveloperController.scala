@@ -23,7 +23,7 @@ class DeveloperController  @Inject()(cc: ControllerComponents, developerService:
 
   def register() =  Action.async(parse.json) { implicit request =>
     withJsonBody[UserCreateRequest] { userCreateRequest: UserCreateRequest =>
-      developerService.createUser(userCreateRequest) map (user => Ok(Json.toJson(UserResponse(user))))
+      developerService.createUser(userCreateRequest) map (user => Created(Json.toJson(UserResponse(user))))
     } recover {
       case _: UserAlreadyRegistered   => ErrorUserAlreadyRegistered().toHttpResponse
     }
