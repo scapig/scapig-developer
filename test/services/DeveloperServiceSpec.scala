@@ -102,4 +102,26 @@ class DeveloperServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
       verify(userRepository).save(expectedUser)
     }
   }
+
+  "updatePassword" should {
+
+    "fail with UserNotFound error when the user does not exist" in new Setup {
+      given(userRepository.fetchByEmail(user.email)).willReturn(successful(None))
+
+      intercept[UserNotFound]{await(underTest.updatePassword(user.email, "newPassword"))}
+    }
+
+    "update the password" in new Setup {
+      val expectedUser = user.copy(credentials = "newPassword")
+
+      given(userRepository.fetchByEmail(user.email)).willReturn(successful(Some(user)))
+      given(userRepository.save(any())).willAnswer(returnSame)
+
+      val result = await(underTest.updatePassword(user.email, "newPassword"))
+
+      result shouldBe expectedUser
+      verify(userRepository).save(expectedUser)
+    }
+  }
+
 }

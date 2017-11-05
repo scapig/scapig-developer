@@ -35,4 +35,10 @@ class DeveloperController  @Inject()(cc: ControllerComponents, developerService:
     }
   }
 
+  def changePassword(email: String) =  Action.async(parse.json) { implicit request =>
+    withJsonBody[PasswordChangeRequest] { passwordChangeRequest: PasswordChangeRequest =>
+      developerService.updatePassword(email, passwordChangeRequest.password) map (user => Ok(Json.toJson(UserResponse(user))))
+    }
+  }
+
 }

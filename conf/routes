@@ -4,6 +4,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 POST          /developer                                 @controllers.DeveloperController.register
 GET           /developer                                 @controllers.DeveloperController.fetchByEmail(email: String)
 POST          /developer/:email                          @controllers.DeveloperController.updateProfile(email: String)
+POST          /developer/:email/password                 @controllers.DeveloperController.changePassword(email: String)
 
 POST          /session                                   @controllers.SessionController.create
 GET           /session/:id                               @controllers.SessionController.fetch(id: String)

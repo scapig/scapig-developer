@@ -21,5 +21,6 @@ object JsonFormatters {
   implicit val formatUserResponse = Json.format[UserResponse]
   implicit val formatUserSession = Json.format[UserSession]
   implicit val formatSessionCreateRequest = Json.format[SessionCreateRequest]
+  implicit val formatPasswordChangeRequest = Json.format[PasswordChangeRequest]
 
 }

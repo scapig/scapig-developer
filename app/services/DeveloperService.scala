@@ -27,6 +27,13 @@ class DeveloperService @Inject()(userRepository: UserRepository, bCryptGenerator
     } yield updated
   }
 
+  def updatePassword(email: String, password: String): Future[User] = {
+    for {
+      user <- userRepository.fetchByEmail(email).map(_.getOrElse(throw UserNotFound(email)))
+      updated <- userRepository.save(user.copy(credentials = password))
+    } yield updated
+  }
+
   def fetchByEmail(email: String): Future[Option[User]] = {
     userRepository.fetchByEmail(email.toLowerCase)
   }

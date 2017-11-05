@@ -1,8 +1,8 @@
 package controllers
 
-import models.{UserEditRequest, _}
+import models.{PasswordChangeRequest, UserEditRequest, _}
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.{verifyZeroInteractions, verify}
+import org.mockito.Mockito.{verify, verifyZeroInteractions}
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -84,7 +84,7 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
     val userEditRequest = UserEditRequest("updatedFirstName", "updatedLastName")
     val updatedUser = user.copy(firstName = "updatedFirstName", lastName = "updatedLastName")
 
-    "save the update user and return 200 (Ok) with the update user" in new Setup {
+    "save the update user and return 200 (Ok) with the updated user" in new Setup {
       given(developerService.updateUser(user.email, userEditRequest)).willReturn(successful(updatedUser))
 
       val result = await(underTest.updateProfile(user.email)(request.withBody(toJson(userEditRequest))))
@@ -94,4 +94,20 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
       jsonBodyOf(result) shouldBe Json.toJson(UserResponse(updatedUser))
     }
   }
+
+  "changePassword" should {
+    val passwordChangeRequest = PasswordChangeRequest("updatedPassword")
+    val updatedUser = user.copy(credentials = "updatedPassword")
+
+    "save the update password and return 200 (Ok) with the updated user" in new Setup {
+      given(developerService.updatePassword(user.email, "updatedPassword")).willReturn(successful(updatedUser))
+
+      val result = await(underTest.changePassword(user.email)(request.withBody(toJson(passwordChangeRequest))))
+
+      verify(developerService).updatePassword(user.email, passwordChangeRequest.password)
+      status(result) shouldBe Status.OK
+      jsonBodyOf(result) shouldBe Json.toJson(UserResponse(updatedUser))
+    }
+  }
+
 }

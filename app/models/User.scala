@@ -32,3 +32,5 @@ object UserResponse {
 
 case class UserEditRequest(firstName: String,
                            lastName: String)
+
+case class PasswordChangeRequest(password: String)
