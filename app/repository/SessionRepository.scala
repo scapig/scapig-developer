@@ -19,7 +19,7 @@ import scala.concurrent.Future
 @Singleton
 class SessionRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi, val appConfig: AppConfig)  {
 
-  val repository: Future[JSONCollection] =
+  def repository: Future[JSONCollection] =
     reactiveMongoApi.database.map(_.collection[JSONCollection]("session"))
 
   def save(session: Session): Future[Session] = {

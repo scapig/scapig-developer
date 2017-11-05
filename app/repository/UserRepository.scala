@@ -17,7 +17,7 @@ import reactivemongo.play.json._
 @Singleton
 class UserRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)  {
 
-  val repository: Future[JSONCollection] =
+  def repository: Future[JSONCollection] =
     reactiveMongoApi.database.map(_.collection[JSONCollection]("user"))
 
   def save(user: User): Future[User] = {
