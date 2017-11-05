@@ -121,10 +121,11 @@ class DeveloperServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
     }
 
     "update the password" in new Setup {
-      val expectedUser = user.copy(credentials = "newPassword")
+      val expectedUser = user.copy(credentials = "newEncryptedPassword")
 
       given(userRepository.fetchByEmail(user.email)).willReturn(successful(Some(user)))
       given(bCryptGenerator.authenticate(passwordChangeRequest.oldPassword, encodedPassword)).willReturn(successful(HasSucceeded))
+      given(bCryptGenerator.fromPassword(passwordChangeRequest.newPassword)).willReturn("newEncryptedPassword")
       given(userRepository.save(any())).willAnswer(returnSame)
 
       val result = await(underTest.updatePassword(user.email, passwordChangeRequest))

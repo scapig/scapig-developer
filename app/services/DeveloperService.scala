@@ -31,7 +31,7 @@ class DeveloperService @Inject()(userRepository: UserRepository, bCryptGenerator
     for {
       user <- userRepository.fetchByEmail(email).map(_.getOrElse(throw UserNotFound(email)))
       _ <- bCryptGenerator.authenticate(passwordChangeRequest.oldPassword, user.credentials)
-      updated <- userRepository.save(user.copy(credentials = passwordChangeRequest.newPassword))
+      updated <- userRepository.save(user.copy(credentials = bCryptGenerator.fromPassword(passwordChangeRequest.newPassword)))
     } yield updated
   }
 
