@@ -13,7 +13,7 @@ import utils.UnitSpec
 import models.JsonFormatters._
 
 import scala.concurrent.Future
-import scala.concurrent.Future.successful
+import scala.concurrent.Future.{failed, successful}
 
 class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
 
@@ -49,7 +49,7 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
     }
 
     "return 409 (Conflict) when the user already exists" in new Setup {
-      given(developerService.createUser(userCreateRequest)).willReturn(Future.failed(UserAlreadyRegistered("email")))
+      given(developerService.createUser(userCreateRequest)).willReturn(failed(UserAlreadyRegistered("email")))
 
       val result = await(underTest.register()(request.withBody(toJson(userCreateRequest))))
 
@@ -96,18 +96,27 @@ class DeveloperControllerSpec extends UnitSpec with MockitoSugar {
   }
 
   "changePassword" should {
-    val passwordChangeRequest = PasswordChangeRequest("updatedPassword")
+    val passwordChangeRequest = PasswordChangeRequest("oldPassword", "updatedPassword")
     val updatedUser = user.copy(credentials = "updatedPassword")
 
-    "save the update password and return 200 (Ok) with the updated user" in new Setup {
-      given(developerService.updatePassword(user.email, "updatedPassword")).willReturn(successful(updatedUser))
+    "save the updated password and return 204 (NoContent)" in new Setup {
+      given(developerService.updatePassword(user.email, passwordChangeRequest)).willReturn(successful(updatedUser))
 
       val result = await(underTest.changePassword(user.email)(request.withBody(toJson(passwordChangeRequest))))
 
-      verify(developerService).updatePassword(user.email, passwordChangeRequest.password)
-      status(result) shouldBe Status.OK
-      jsonBodyOf(result) shouldBe Json.toJson(UserResponse(updatedUser))
+      verify(developerService).updatePassword(user.email, passwordChangeRequest)
+      status(result) shouldBe Status.NO_CONTENT
     }
+
+    "return a 401 (Unauthorized) when the password is invalid" in new Setup {
+      given(developerService.updatePassword(user.email, passwordChangeRequest)).willReturn(failed(InvalidCredentials()))
+
+      val result = await(underTest.changePassword(user.email)(request.withBody(toJson(passwordChangeRequest))))
+
+      status(result) shouldBe Status.UNAUTHORIZED
+      jsonBodyOf(result) shouldBe Json.obj("code" -> "UNAUTHORIZED", "message" -> "Invalid unsername or password")
+    }
+
   }
 
 }

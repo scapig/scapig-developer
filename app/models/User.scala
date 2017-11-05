@@ -33,4 +33,4 @@ object UserResponse {
 case class UserEditRequest(firstName: String,
                            lastName: String)
 
-case class PasswordChangeRequest(password: String)
+case class PasswordChangeRequest(oldPassword: String, newPassword: String)

@@ -10,7 +10,8 @@ import org.scalatest.mockito.MockitoSugar
 import repository.UserRepository
 import utils.{BCryptGenerator, UnitSpec}
 
-import scala.concurrent.Future.successful
+import scala.concurrent.Future
+import scala.concurrent.Future.{failed, successful}
 
 class DeveloperServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
 
@@ -104,20 +105,29 @@ class DeveloperServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
   }
 
   "updatePassword" should {
+    val passwordChangeRequest = PasswordChangeRequest("oldPassword", "newPassword")
 
     "fail with UserNotFound error when the user does not exist" in new Setup {
       given(userRepository.fetchByEmail(user.email)).willReturn(successful(None))
 
-      intercept[UserNotFound]{await(underTest.updatePassword(user.email, "newPassword"))}
+      intercept[UserNotFound]{await(underTest.updatePassword(user.email, passwordChangeRequest))}
+    }
+
+    "fail with InvalidCredentials error when the oldPassword is invalid" in new Setup {
+      given(userRepository.fetchByEmail(user.email)).willReturn(successful(Some(user)))
+      given(bCryptGenerator.authenticate(passwordChangeRequest.oldPassword, encodedPassword)).willReturn(failed(InvalidCredentials()))
+
+      intercept[InvalidCredentials]{await(underTest.updatePassword(user.email, passwordChangeRequest))}
     }
 
     "update the password" in new Setup {
       val expectedUser = user.copy(credentials = "newPassword")
 
       given(userRepository.fetchByEmail(user.email)).willReturn(successful(Some(user)))
+      given(bCryptGenerator.authenticate(passwordChangeRequest.oldPassword, encodedPassword)).willReturn(successful(HasSucceeded))
       given(userRepository.save(any())).willAnswer(returnSame)
 
-      val result = await(underTest.updatePassword(user.email, "newPassword"))
+      val result = await(underTest.updatePassword(user.email, passwordChangeRequest))
 
       result shouldBe expectedUser
       verify(userRepository).save(expectedUser)
