@@ -17,7 +17,7 @@ class SessionRepositorySpec extends UnitSpec with BeforeAndAfterEach {
   val session = Session("user@test.com", "sessionId", DateTime.now(), DateTime.now())
 
   lazy val fakeApplication: Application = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> "mongodb://localhost:27017/tapi-developer-test")
+    .configure("mongodb.uri" -> "mongodb://localhost:27017/scapig-developer-test")
     .build()
 
   lazy val underTest = fakeApplication.injector.instanceOf[SessionRepository]
