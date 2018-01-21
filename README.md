@@ -11,7 +11,14 @@ sbt universal:package-zip-tarball
 docker build -t scapig-developer .
 ``
 
+## Publishing
+``
+docker tag scapig-developer scapig/scapig-developer:VERSION
+docker login
+docker push scapig/scapig-developer:VERSION
+``
+
 ## Running
 ``
-docker run -p8000:8000 -i -a stdin -a stdout -a stderr scapig-developer sh start-docker.sh
+docker run -p9016:9016 -d scapig/scapig-developer:VERSION
 ``
