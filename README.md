@@ -1,5 +1,7 @@
 ## scapig-developer
 
+This is the microservice responsible of storing and retrieving the developers registered on the Scapig Developer Hub (http://www.scapig.com).
+
 ## Building
 ``
 sbt clean test it:test component:test
